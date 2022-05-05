@@ -1,5 +1,6 @@
 import joi from "joi";
 import bcrypt from "bcrypt";
+import { v4 as uuid } from "uuid";
 
 import db from "./../db.js";
 
@@ -21,10 +22,46 @@ export async function signUpUser(req, res) {
       .insertOne({ ...userInfoValidation, password: passwordHash });
     res.sendStatus(201);
   } catch (error) {
+    console.log("Houve um erro!", error);
     if (error.isJoi === true) {
       return res.status(422).send(error.message);
     }
+    res.sendStatus(500);
+  }
+}
+
+export async function signInUser(req, res) {
+  try {
+    const loginSchema = joi.object({
+      email: joi.string().email().required(),
+      password: joi.string().required(),
+    });
+    const loginValidation = await loginSchema.validateAsync(req.body);
+    const user = await db
+      .collection("users")
+      .findOne({ email: loginValidation.email });
+
+    if (user && bcrypt.compareSync(loginValidation.password, user.password)) {
+      const token = uuid();
+      const userHasPreviousSession = await db
+        .collection("sessions")
+        .findOne({ userId: user._id });
+      if (!userHasPreviousSession) {
+        await db.collection("sessions").insertOne({ userId: user._id, token });
+      } else {
+        await db
+          .collection("sessions")
+          .updateOne({ userId: user._id }, { $set: { token } });
+      }
+      res.send(token);
+    } else {
+      res.sendStatus(401);
+    }
+  } catch (error) {
     console.log("Houve um erro!", error);
+    if (error.isJoi === true) {
+      return res.status(422).send(error.message);
+    }
     res.sendStatus(500);
   }
 }
