@@ -15,6 +15,14 @@ export async function signUpUser(req, res) {
       })
       .with("password", "repeat_password");
     const userInfoValidation = await signUpSchema.validateAsync(req.body);
+    const userRegistry = await db
+      .collection("users")
+      .findOne({ email: userInfoValidation.email });
+
+    if (userRegistry) {
+      return res.status(422).send("Já existe um usuário com este e-mail.");
+    }
+
     const passwordHash = bcrypt.hashSync(userInfoValidation.password, 10);
     delete userInfoValidation.repeat_password;
     await db
@@ -48,12 +56,11 @@ export async function signInUser(req, res) {
         .findOne({ userId: user._id });
       if (!userHasPreviousSession) {
         await db.collection("sessions").insertOne({ userId: user._id, token });
+        res.send(token);
       } else {
-        await db
-          .collection("sessions")
-          .updateOne({ userId: user._id }, { $set: { token } });
+        const oldToken = userHasPreviousSession.token;
+        res.send(oldToken);
       }
-      res.send(token);
     } else {
       res.sendStatus(401);
     }
