@@ -1,5 +1,6 @@
 import joi from "joi";
 import dayjs from "dayjs";
+import { ObjectId } from "mongodb";
 
 import db from "../db.js";
 
@@ -35,6 +36,17 @@ export async function getEntries(req, res) {
       return entry;
     });
     res.status(200).send(formatedEntries);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+}
+
+export async function deleteEntry(req, res) {
+  try {
+    const { entry } = res.locals;
+    await db.collection("data").deleteOne({ _id: entry._id });
+    res.sendStatus(200);
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
