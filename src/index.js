@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 
 import { signUpUser, signInUser } from "./controllers/authController.js";
 import { addNewEntry } from "./controllers/dataController.js";
+import validReqData from "./middlewares/validReqData.js";
 
 dotenv.config();
 
@@ -15,6 +16,6 @@ app.post("/sign-up", signUpUser);
 
 app.post("/sign-in", signInUser);
 
-app.post("/new-entry", addNewEntry);
+app.post("/new-entry", validReqData, addNewEntry);
 
 app.listen(process.env.PORT, () => console.log("Servidor Online!!!!"));
