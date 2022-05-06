@@ -22,3 +22,21 @@ export async function addNewEntry(req, res) {
     res.sendStatus(500);
   }
 }
+
+export async function getEntries(req, res) {
+  try {
+    const { user } = res.locals;
+    const entries = await db
+      .collection("data")
+      .find({ userId: user._id })
+      .toArray();
+    const formatedEntries = entries.map((entry) => {
+      delete entry.userId;
+      return entry;
+    });
+    res.status(200).send(formatedEntries);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+}

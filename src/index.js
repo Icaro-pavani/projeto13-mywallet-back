@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import { signUpUser, signInUser } from "./controllers/authController.js";
-import { addNewEntry } from "./controllers/dataController.js";
+import { addNewEntry, getEntries } from "./controllers/dataController.js";
 import validToken from "./middlewares/validToken.js";
 import validReqBody from "./middlewares/validReqBody.js";
 
@@ -18,5 +18,7 @@ app.post("/sign-up", signUpUser);
 app.post("/sign-in", signInUser);
 
 app.post("/entry", validToken, validReqBody, addNewEntry);
+
+app.get("/entry", validToken, getEntries);
 
 app.listen(process.env.PORT, () => console.log("Servidor Online!!!!"));
