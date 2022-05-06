@@ -3,17 +3,11 @@ import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
 
 import db from "./../db.js";
+import signUpSchema from "../schemas/signUpSchema.js";
+import loginSchema from "../schemas/loginSchema.js";
 
 export async function signUpUser(req, res) {
   try {
-    const signUpSchema = joi
-      .object({
-        name: joi.string().required(),
-        email: joi.string().email().required(),
-        password: joi.string().required(),
-        repeat_password: joi.ref("password"),
-      })
-      .with("password", "repeat_password");
     const userInfoValidation = await signUpSchema.validateAsync(req.body);
     const userRegistry = await db
       .collection("users")
@@ -40,10 +34,6 @@ export async function signUpUser(req, res) {
 
 export async function signInUser(req, res) {
   try {
-    const loginSchema = joi.object({
-      email: joi.string().email().required(),
-      password: joi.string().required(),
-    });
     const loginValidation = await loginSchema.validateAsync(req.body);
     const user = await db
       .collection("users")
