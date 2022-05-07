@@ -1,8 +1,6 @@
-import joi from "joi";
 import db from "../db.js";
 
 import tokenSchema from "../schemas/tokenSchema.js";
-import bodySchema from "../schemas/bodySchema.js";
 
 export default async function validToken(req, res, next) {
   const { authorization } = req.headers;
