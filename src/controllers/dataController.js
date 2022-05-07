@@ -50,3 +50,14 @@ export async function deleteEntry(req, res) {
     res.sendStatus(500);
   }
 }
+
+export async function updateEntry(req, res) {
+  try {
+    const { entry, body } = res.locals;
+    await db.collection("data").updateOne({ _id: entry._id }, { $set: body });
+    res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+}
