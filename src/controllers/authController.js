@@ -7,20 +7,18 @@ import loginSchema from "../schemas/loginSchema.js";
 
 export async function signUpUser(req, res) {
   try {
-    const userInfoValidation = await signUpSchema.validateAsync(req.body);
+    const { body } = res.locals;
     const userRegistry = await db
       .collection("users")
-      .findOne({ email: userInfoValidation.email });
+      .findOne({ email: body.email });
 
     if (userRegistry) {
       return res.status(422).send("Já existe um usuário com este e-mail.");
     }
 
-    const passwordHash = bcrypt.hashSync(userInfoValidation.password, 10);
-    delete userInfoValidation.repeat_password;
-    await db
-      .collection("users")
-      .insertOne({ ...userInfoValidation, password: passwordHash });
+    const passwordHash = bcrypt.hashSync(body.password, 10);
+    delete body.repeat_password;
+    await db.collection("users").insertOne({ ...body, password: passwordHash });
     res.sendStatus(201);
   } catch (error) {
     console.log("Houve um erro!", error);
@@ -33,12 +31,10 @@ export async function signUpUser(req, res) {
 
 export async function signInUser(req, res) {
   try {
-    const loginValidation = await loginSchema.validateAsync(req.body);
-    const user = await db
-      .collection("users")
-      .findOne({ email: loginValidation.email });
+    const { body } = res.locals;
+    const user = await db.collection("users").findOne({ email: body.email });
 
-    if (user && bcrypt.compareSync(loginValidation.password, user.password)) {
+    if (user && bcrypt.compareSync(body.password, user.password)) {
       const token = uuid();
       const userHasPreviousSession = await db
         .collection("sessions")
