@@ -41,10 +41,10 @@ export async function signInUser(req, res) {
         .findOne({ userId: user._id });
       if (!userHasPreviousSession) {
         await db.collection("sessions").insertOne({ userId: user._id, token });
-        res.send(token);
+        res.send({ token, name: user.name });
       } else {
         const oldToken = userHasPreviousSession.token;
-        res.send(oldToken);
+        res.send({ token: oldToken, name: user.name });
       }
     } else {
       res.sendStatus(401);
