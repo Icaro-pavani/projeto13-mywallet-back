@@ -7,7 +7,7 @@ export default async function validSignUpBody(req, res, next) {
     name: stripHtml(name).result.trim(),
     email: stripHtml(email).result.trim(),
     password: stripHtml(password).result.trim(),
-    password: stripHtml(repeat_password).result.trim(),
+    repeat_password: stripHtml(repeat_password).result.trim(),
   };
   try {
     const userInfoValidation = await signUpSchema.validateAsync(signUpBody);

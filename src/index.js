@@ -11,4 +11,6 @@ app.use(express.json());
 app.use(cors());
 app.use(router);
 
-app.listen(process.env.PORT, () => console.log("Servidor Online!!!!"));
+app.listen(process.env.PORT, () =>
+  console.log("Servidor Online on port " + process.env.PORT)
+);
