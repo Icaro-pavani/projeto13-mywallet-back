@@ -30,7 +30,8 @@ This API get the requests from the MyWallet front-end and respond accordingly.
 
 - response : <code>
   {
-  token
+  token,
+  name
   }
   </code>
 
